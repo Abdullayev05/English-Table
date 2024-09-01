@@ -2,16 +2,25 @@ document.addEventListener("DOMContentLoaded", function() {
     const addInput = document.getElementById('addInput');
     const searchInput = document.getElementById('searchInput');
     const wordsTableBody = document.getElementById('wordsBody');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageNumbers = document.getElementById('pageNumbers');
 
+    const wordsPerPage = 100;
     let words = JSON.parse(localStorage.getItem('words')) || [];
+    let currentPage = 1;
 
     function renderTable() {
         wordsTableBody.innerHTML = '';
-        words.forEach((word, index) => {
+        const start = (currentPage - 1) * wordsPerPage;
+        const end = start + wordsPerPage;
+        const pageWords = words.slice(start, end);
+
+        pageWords.forEach((word, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${word} <i class="fa-solid fa-trash" data-index="${index}"></i></td>
+                <td>${start + index + 1}</td>
+                <td>${word} <i class="fa-solid fa-trash" data-index="${start + index}"></i></td>
             `;
             wordsTableBody.appendChild(row);
         });
@@ -24,7 +33,51 @@ document.addEventListener("DOMContentLoaded", function() {
                 renderTable();
             });
         });
+
+        updatePagination();
     }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(words.length / wordsPerPage);
+        pageNumbers.innerHTML = '';
+
+        // if (currentPage > 1) {
+        //     pageNumbers.innerHTML += `<button data-page="${currentPage - 1}">« Əvvəlki</button>`;
+        // }
+
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.innerHTML += `<button data-page="${i}">${i}</button>`;
+        }
+
+        // if (currentPage < totalPages) {
+        //     pageNumbers.innerHTML += `<button data-page="${currentPage + 1}">Sonrakı »</button>`;
+        // }
+
+        document.querySelectorAll('.pagination button[data-page]').forEach(button => {
+            button.addEventListener('click', function() {
+                currentPage = parseInt(this.getAttribute('data-page'));
+                renderTable();
+            });
+        });
+
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil(words.length / wordsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    });
 
     addInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -35,6 +88,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     words.push(word);
                     localStorage.setItem('words', JSON.stringify(words));
+                    
+                    if (words.length > currentPage * wordsPerPage) {
+                        currentPage = Math.ceil(words.length / wordsPerPage);
+                    }
+                    
                     renderTable();
                     addInput.value = '';
                 }

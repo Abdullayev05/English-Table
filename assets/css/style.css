@@ -22,28 +22,32 @@ body {
     height: 100%;
     text-align: center;
     border-radius: 10px;
+    overflow: hidden;
+    background-color: #ABABE7;
+    /* border-radius-ı düzgün tətbiq etmək üçün */
 }
 
 table {
-    width: 300px;
-    border-collapse: collapse;
-    text-align: center;
+    width: 100%;
+    border-collapse: separate;
+    /* Xətlərin aralı görünməsi üçün */
+    border-spacing: 0;
+    /* Hüceyrələr arasındakı məsafəni sıfırlamaq */
 }
 
 th,
 td {
     padding: 10px;
     border: 1px solid #ddd;
-    text-align: left;
     color: #f8f7f7;
-
+    text-align: left;
+    position: relative;
+    /* trash iconu üçün */
 }
 
 th.wide-header {
     width: 100%;
-    border-radius: 10px;
     text-align: center;
-
 }
 
 #searchInput,
@@ -60,4 +64,29 @@ th.wide-header {
 .fa-trash {
     cursor: pointer;
     color: red;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.pagination button {
+    background-color: #f8f7f7;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
