@@ -58,6 +58,7 @@ th.wide-header {
     height: 40px;
     border-radius: 10px;
     border: 0;
+    outline: none;
     text-align: center;
 }
 
