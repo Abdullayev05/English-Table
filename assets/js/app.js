@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const wordsPerPage = 100;
     let words = JSON.parse(localStorage.getItem('words')) || [];
     let currentPage = 1;
+    let editingIndex = null;
 
     function renderTable() {
         wordsTableBody.innerHTML = '';
@@ -20,7 +21,11 @@ document.addEventListener("DOMContentLoaded", function() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${start + index + 1}</td>
-                <td>${word} <i class="fa-solid fa-trash" data-index="${start + index}"></i></td>
+                <td>
+                    ${word} 
+                    <i class="fa-solid fa-pen-to-square" data-index="${start + index}"></i>
+                    <i class="fa-solid fa-trash" data-index="${start + index}"></i>
+                </td>
             `;
             wordsTableBody.appendChild(row);
         });
@@ -34,6 +39,16 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
+        document.querySelectorAll('.fa-pen-to-square').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const index = this.getAttribute('data-index');
+                editingIndex = index;
+                addInput.value = words[index];
+                addInput.focus();
+                addInput.classList.add('editing');
+            });
+        });
+
         updatePagination();
     }
 
@@ -41,17 +56,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const totalPages = Math.ceil(words.length / wordsPerPage);
         pageNumbers.innerHTML = '';
 
-        // if (currentPage > 1) {
-        //     pageNumbers.innerHTML += `<button data-page="${currentPage - 1}">« Əvvəlki</button>`;
-        // }
-
         for (let i = 1; i <= totalPages; i++) {
             pageNumbers.innerHTML += `<button data-page="${i}">${i}</button>`;
         }
-
-        // if (currentPage < totalPages) {
-        //     pageNumbers.innerHTML += `<button data-page="${currentPage + 1}">Sonrakı »</button>`;
-        // }
 
         document.querySelectorAll('.pagination button[data-page]').forEach(button => {
             button.addEventListener('click', function() {
@@ -83,7 +90,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (e.key === 'Enter') {
             const word = addInput.value.trim();
             if (word) {
-                if (words.includes(word)) {
+                if (editingIndex !== null) {
+                    words[editingIndex] = word;
+                    editingIndex = null;
+                    addInput.classList.remove('editing');
+                } else if (words.includes(word)) {
                     alert("Bu söz artıq istifadə olunub!");
                 } else {
                     words.push(word);
@@ -92,10 +103,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (words.length > currentPage * wordsPerPage) {
                         currentPage = Math.ceil(words.length / wordsPerPage);
                     }
-                    
-                    renderTable();
-                    addInput.value = '';
                 }
+
+                localStorage.setItem('words', JSON.stringify(words));
+                renderTable();
+                addInput.value = '';
             }
         }
     });
@@ -110,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td>${highlightedWord} <i class="fa-solid fa-trash" data-index="${index}"></i></td>
+                <td>${highlightedWord} <i class="fa-solid fa-pen-to-square"></i> <i class="fa-solid fa-trash"></i></td>
             `;
             wordsTableBody.appendChild(row);
         });
@@ -121,6 +133,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 words = words.filter(word => word !== wordToDelete);
                 localStorage.setItem('words', JSON.stringify(words));
                 renderTable();
+            });
+        });
+
+        document.querySelectorAll('.fa-pen-to-square').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const index = this.getAttribute('data-index');
+                addInput.value = words[index];
+                editingIndex = index;
+                addInput.focus();
+                addInput.classList.add('editing');
             });
         });
     });
