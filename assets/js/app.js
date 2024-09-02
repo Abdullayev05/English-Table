@@ -41,28 +41,18 @@ document.addEventListener("DOMContentLoaded", function() {
         const totalPages = Math.ceil(words.length / wordsPerPage);
         pageNumbers.innerHTML = '';
 
-        // Add "Previous" button
-        if (currentPage > 1) {
-            pageNumbers.innerHTML += `<button id="prevBtn" data-page="${currentPage - 1}">« Əvvəlki</button>`;
-        }
+        // if (currentPage > 1) {
+        //     pageNumbers.innerHTML += `<button data-page="${currentPage - 1}">« Əvvəlki</button>`;
+        // }
 
-        // Add page numbers
         for (let i = 1; i <= totalPages; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = i;
-            pageButton.setAttribute('data-page', i);
-            if (i === currentPage) {
-                pageButton.classList.add('active');
-            }
-            pageNumbers.appendChild(pageButton);
+            pageNumbers.innerHTML += `<button data-page="${i}">${i}</button>`;
         }
 
-        // Add "Next" button
-        if (currentPage < totalPages) {
-            pageNumbers.innerHTML += `<button id="nextBtn" data-page="${currentPage + 1}">Sonrakı »</button>`;
-        }
+        // if (currentPage < totalPages) {
+        //     pageNumbers.innerHTML += `<button data-page="${currentPage + 1}">Sonrakı »</button>`;
+        // }
 
-        // Add event listeners for page buttons
         document.querySelectorAll('.pagination button[data-page]').forEach(button => {
             button.addEventListener('click', function() {
                 currentPage = parseInt(this.getAttribute('data-page'));
@@ -70,7 +60,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
-        // Update "Previous" and "Next" button states
         prevBtn.disabled = currentPage === 1;
         nextBtn.disabled = currentPage === totalPages;
     }
@@ -99,12 +88,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     words.push(word);
                     localStorage.setItem('words', JSON.stringify(words));
-
-                    // Automatically move to the next page if the current one is full
+                    
                     if (words.length > currentPage * wordsPerPage) {
                         currentPage = Math.ceil(words.length / wordsPerPage);
                     }
-
+                    
                     renderTable();
                     addInput.value = '';
                 }
@@ -115,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
     searchInput.addEventListener('input', () => {
         const searchTerm = searchInput.value.toLowerCase();
         const filteredWords = words.filter(word => word.toLowerCase().includes(searchTerm));
-
+        
         wordsTableBody.innerHTML = '';
         filteredWords.forEach((word, index) => {
             const highlightedWord = word.replace(new RegExp(searchTerm, 'gi'), match => `<span style="background-color: yellow;">${match}</span>`);
